@@ -22,22 +22,22 @@
         to="/ImageUploader"
         :class="{ underline: $route.path === '/ImageUploader' }"
       >
-        <h3><i class="el-icon-picture"></i>&nbsp; 图片上传</h3>
+        <h3><i class="el-icon-picture"></i>&nbsp; 图片鉴定</h3>
       </router-link>
       <router-link
         to="/VideoUploader"
         :class="{ underline: $route.path === '/VideoUploader' }"
       >
-        <h3><i class="el-icon-video-camera-solid"></i>&nbsp;视频上传</h3>
+        <h3><i class="el-icon-video-camera-solid"></i>&nbsp;视频鉴定</h3>
       </router-link>
       <router-link
         to="/TextUploader"
         :class="{ underline: $route.path === '/TextUploader' }"
       >
-        <h3><i class="el-icon-s-order"></i>&nbsp;文本上传</h3>
+        <h3><i class="el-icon-s-order"></i>&nbsp;文本鉴定</h3>
       </router-link>
       <router-link to="/FileUpload" :class="{ underline: $route.path === '/FileUpload' }">
-        <h3><i class="el-icon-s-order"></i>&nbsp;图片上传测试</h3>
+        <h3><i class="el-icon-s-order"></i>&nbsp;图片鉴定测试</h3>
       </router-link>
     </nav>
 
@@ -57,9 +57,9 @@
 export default {
   created() {
     // 在页面刷新时，检查当前路由是否是默认路由
-    if (this.$route.path !== "/HomePage") {
+    if (this.$route.path !== "/ImageUploader") {
       // 如果当前路由不是目标路由，使用编程式导航跳转到目标路由
-      this.$router.replace("/HomePage");
+      this.$router.replace("/ImageUploader");
     }
   },
   data() {

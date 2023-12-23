@@ -2,13 +2,14 @@
  * @Author: 杨柳岸 88012771+Yang1aa@users.noreply.github.com
  * @Date: 2023-12-02 13:48:44
  * @LastEditors: 杨柳岸 88012771+Yang1aa@users.noreply.github.com
- * @LastEditTime: 2023-12-12 13:28:45
+ * @LastEditTime: 2023-12-23 18:04:29
  * @FilePath: \webcode\src\components\TextUploader.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
 <template>
   <div class="imageuploader-container">
-    <el-row :gutter="12">
+    <!-- 
+      <el-row :gutter="12">
       <el-col :span="8">
         <el-card shadow="always"> 总是显示 </el-card>
       </el-col>
@@ -25,77 +26,65 @@
         <el-card shadow="never"> 从不显示 </el-card>
       </el-col>
     </el-row>
+ -->
 
-    <el-row class="upload-container">
-      <el-upload
-        class="upload-demo"
-        drag
-        action="https://i.postimg.cc/Znq33R1B/picture.jpg"
-        multiple
-        :show-file-list="false"
-        :before-upload="beforeUpload"
-        :on-success="handleSuccess"
-        :on-error="handleError"
-      >
-        <i class="el-icon-upload"></i>
-        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-      </el-upload>
-    </el-row>
-    <!-- <div v-if="imageUrl" class="image-container">
+    <!-- 图片上传 -->
+    <el-upload
+      multiple
+      :limit="3"
+      class="file-box"
+      ref="upload"
+      action="http://localhost:8088/file"
+      :on-preview="handlePreview"
+      :on-remove="handleRemove"
+      :on-change="handleChange"
+      :on-exceed="handleExceed"
+      :file-list="images"
+      list-type="picture"
+      :auto-upload="false"
+    >
+      <el-button slot="trigger" size="small" type="primary">选取图片</el-button>
       <el-button
-        @click="performIdentification"
-        type="primary"
-        class="identify-button"
+        style="margin-left: 10px"
+        size="small"
+        type="success"
+        @click="submitFile"
+        >上传图片</el-button
       >
-        点击鉴定
-      </el-button>
-    </div> -->
+      <div slot="tip" class="el-upload__tip">
+        只能上传jpg/png文件，且不超过500kb
+      </div>
+    </el-upload>
 
     <div class="image-container">
-      <div class="image-show">
-        <div class="image">
-          <img :src="imageUrl" @mousedown.prevent />
-        </div>
-        <div
-          v-if="identificationResult"
-          :class="{ 'true-color': isTrue(), 'false-color': !isTrue() }"
-          class="identification-result"
-        >
-          {{ identificationResult }}
-        </div>
-      </div>
+      <!-- 回显图片 -->
+      <div class="image-show"></div>
       <div class="data-show">
-        <div class="data-select">
-          <span>模型选择</span>
-          <el-select v-model="value" placeholder="请选择">
-            <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            >
-            </el-option>
-          </el-select>
+        <div class="slecet">
+          <!-- 模型选择 -->
+          <div class="data-select">
+            <h3>模型选择</h3>
+            <el-select v-model="value" placeholder="请选择">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
+          </div>
+          <!-- 鉴定按钮 -->
+          <el-button size="small" type="primary">鉴定检测</el-button>
         </div>
+        <!-- 鉴定结果 -->
         <div>
           <el-card class="box-card">
-            <div v-for="o in 4" :key="o" class="text item">
-              {{ "列表内容 " + o }}
-            </div>
+            <img src="../../src/assets/logo.png" alt="" />
           </el-card>
           <el-card class="box-card">
-            <div v-for="o in 4" :key="o" class="text item">
-              {{ "列表内容 " + o }}
-            </div>
-          </el-card>
-          <el-card class="box-card">
-            <div v-for="o in 4" :key="o" class="text item">
-              {{ "列表内容 " + o }}
-            </div> </el-card
-          ><el-card class="box-card">
-            <div v-for="o in 4" :key="o" class="text item">
-              {{ "列表内容 " + o }}
-            </div>
+            <h3>性能1：1%</h3>
+            <h3>性能1：1%</h3>
           </el-card>
         </div>
       </div>
@@ -106,74 +95,91 @@
 export default {
   data() {
     return {
-      imageUrl: null,
-      identificationResult: null,
+      images: [],
+      imageurls: [],
       options: [
         {
           value: "选项1",
-          label: "黄金糕",
+          label: "mode1",
         },
         {
           value: "选项2",
-          label: "双皮奶",
+          label: "mode2",
         },
         {
           value: "选项3",
-          label: "蚵仔煎",
+          label: "mode3",
         },
         {
           value: "选项4",
-          label: "龙须面",
+          label: "mode4",
         },
         {
           value: "选项5",
-          label: "北京烤鸭",
+          label: "mode5",
         },
       ],
-      value: "",
-      src: "https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg",
+      value: "选项1",
     };
   },
   methods: {
-    beforeUpload(file) {
-      // 校验文件类型，这里仅允许上传图片
-      const isImage = file.type.startsWith("image/");
-      if (!isImage) {
-        this.$message.error("只能上传图片文件！");
-        return false;
+    submitFile() {
+      if (this.images.length === 0) {
+        this.$message.warning("请选择文件");
+        return;
       }
-      // 校验文件大小，这里假设不超过 2MB
-      const isLt2M = file.size / 1024 / 1024 < 2;
-      if (!isLt2M) {
-        this.$message.error("文件大小不能超过 2MB！");
-        return false;
-      }
-      return isImage && isLt2M;
+      let formData = new FormData(); //创建一个表单
+      this.images.forEach((file) => {
+        formData.append("files", file.raw); //将文件传到表单中，files属性是后端接受的参数名
+      });
+      this.$axios
+        .post("/file", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        })
+        .then((res) => {
+          this.$message.success("文件上传成功");
+          this.images = [];
+          this.getImages();
+        })
+        .catch((error) => {
+          this.$message.error("文件上传失败", error.msg);
+        });
     },
-    handleSuccess(response, file, fileList) {
-      // 上传成功的回调
-      this.imageUrl = URL.createObjectURL(file.raw);
-      // 清空鉴定结果
-      this.identificationResult = null;
+    //移除文件列表时的钩子
+    handleRemove(file, fileList) {
+      this.images = fileList;
+      console.log("移除文件列表时的钩子", file);
     },
-    handleError(error, file, fileList) {
-      // 上传失败的回调
-      this.$message.error("上传失败，请稍后重试！");
+    //点击某个文件时的钩子
+    handlePreview(file) {
+      console.log("点击某个文件时的钩子", file);
     },
-    performIdentification() {
-      // 模拟后端鉴定结果，随机生成真或假
-      const isTrue = Math.random() < 0.5;
-      this.identificationResult = isTrue ? "真" : "假";
+    //添加到上传列表时的钩子
+    handleChange(file, fileList) {
+      this.images = fileList;
+      console.log("添加到上传列表时的钩子", file);
     },
-    isTrue() {
-      return this.identificationResult === "真";
+    //文件超出个数限制时的钩子
+    handleExceed() {
+      this.$message.warning("文件超出3个");
+      console.log("文件超出个数限制时的钩子");
+    },
+    getImages() {
+      this.$axios
+        .get("/filelist")
+        .then((response) => {
+          this.imageurls = response.data;
+          console.log("获取图片列表成功");
+        })
+        .catch((error) => {
+          this.$message.error("获取图片列表失败");
+        });
     },
   },
 };
 </script>
-<style>
+<style lang="scss">
 .imageuploader-container {
-  background-color: red;
   color: #00aaff;
   text-align: center;
   z-index: 0;
@@ -194,6 +200,49 @@ export default {
 .el-row {
   position: relative;
 }
+.file-box {
+  border: 1px solid #dcdfe6;
+  width: 350px;
+  margin: 50px auto;
+  padding: 35px 35px 15px 35px;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  box-shadow: 0 0 25px #909399;
+}
+
+.el-row {
+  margin-bottom: 20px;
+}
+.el-row:last-child {
+  margin-bottom: 0;
+}
+.el-col {
+  border-radius: 4px;
+}
+
+.bg-purple-dark {
+  background: #99a9bf;
+}
+
+.bg-purple {
+  background: #d3dce6;
+}
+
+.bg-purple-light {
+  background: #e5e9f2;
+}
+
+.grid-content {
+  border-radius: 4px;
+  margin-top: 10px;
+  min-height: 36px;
+}
+
+.row-bg {
+  padding: 10px 0;
+  background-color: #f9fafc;
+}
 
 .image-display {
   margin-top: 10px;
@@ -201,12 +250,16 @@ export default {
   overflow: hidden;
 }
 
-.upload-container /deep/ .el-upload-dragger {
+.upload-container {
+  .el-upload-dragger {
+  }
   width: 100% !important;
   height: 100px !important;
 }
 
-.upload-container /deep/ .el-upload {
+.upload-container {
+  .el-upload {
+  }
   width: 100% !important;
 }
 .el-icon-upload {
@@ -232,19 +285,20 @@ export default {
 /*上传后图片样式设置*/
 .image-container {
   width: 100%;
-  height: 70%;
-  background-color: rgb(16, 247, 93);
+  height: 80vh;
   display: flex;
+  margin-bottom: 10vh;
 }
 
 .image-show {
   flex: 6;
-  height: 100%;
+  height: 80vh;
   border-radius: 3%;
-  background-color: black;
+  background-color: rgb(93, 181, 150);
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-left: 2px;
 }
 
 .image-show img {
@@ -254,11 +308,12 @@ export default {
   background-color: white;
 }
 .data-show {
-  background: red;
+  background: rgb(225, 209, 209);
   flex: 2;
-  height: 100%;
+  height: 80vh;
   border-radius: 3%;
   margin-left: 3%;
+  padding: 1% 3%;
   /*display: flex;
   justify-content: center;
   align-items: center;*/
@@ -266,16 +321,42 @@ export default {
 
 /* 下拉框*/
 
+.slecet {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15%;
+  .el-button {
+    height: 40px;
+  }
+}
 .data-select {
   display: flex;
   justify-content: center;
   align-items: center;
   margin: 2%;
+  h3 {
+    color: black;
+    margin-right: 5px;
+    min-width: 80px;
+  }
+  el-button {
+    color: #00aaff !important;
+  }
 }
 .el-select {
   width: 70%;
   text-align: center;
   display: block;
   margin: 0 2%;
+}
+
+/* 鉴定结果card*/
+.box-card {
+  img {
+    background-color: #fff;
+  }
+  h3 {
+    text-align: center;
+  }
 }
 </style>
