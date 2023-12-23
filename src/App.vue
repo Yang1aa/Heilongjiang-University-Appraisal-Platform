@@ -36,9 +36,9 @@
       >
         <h3><i class="el-icon-s-order"></i>&nbsp;文本鉴定</h3>
       </router-link>
-      <router-link to="/FileUpload" :class="{ underline: $route.path === '/FileUpload' }">
+      <!-- <router-link to="/FileUpload" :class="{ underline: $route.path === '/FileUpload' }">
         <h3><i class="el-icon-s-order"></i>&nbsp;图片鉴定测试</h3>
-      </router-link>
+      </router-link> -->
     </nav>
 
     <!-- footer -->

@@ -2,7 +2,7 @@
  * @Author: 杨柳岸 88012771+Yang1aa@users.noreply.github.com
  * @Date: 2023-12-02 13:48:44
  * @LastEditors: 杨柳岸 88012771+Yang1aa@users.noreply.github.com
- * @LastEditTime: 2023-12-23 18:04:29
+ * @LastEditTime: 2023-12-23 18:48:45
  * @FilePath: \webcode\src\components\TextUploader.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -58,7 +58,15 @@
 
     <div class="image-container">
       <!-- 回显图片 -->
-      <div class="image-show"></div>
+      <div class="image-show">
+        <img v-if="uploadedImageUrl"
+             :src="uploadedImageUrl"
+             :key="uploadedImageUrl"
+             alt="Uploaded Image" />
+        <img v-else
+             :src="defaultImageUrl"
+             alt="Default Image" />
+      </div>
       <div class="data-show">
         <div class="slecet">
           <!-- 模型选择 -->
@@ -80,7 +88,15 @@
         <!-- 鉴定结果 -->
         <div>
           <el-card class="box-card">
-            <img src="../../src/assets/logo.png" alt="" />
+            <el-card class="box-card">
+              <img v-if="uploadedImageUrl"
+                   :src="uploadedImageUrl"
+                   :key="uploadedImageUrl"
+                   alt="Uploaded Image" />
+              <img v-else
+                   :src="defaultImageUrl"
+                   alt="Default Image" />
+            </el-card>
           </el-card>
           <el-card class="box-card">
             <h3>性能1：1%</h3>
@@ -120,6 +136,8 @@ export default {
         },
       ],
       value: "选项1",
+      uploadedImageUrl: null, // 用于存储上传图片的URL
+      defaultImageUrl: "/default.jpg", // 默认图片的路径
     };
   },
   methods: {
@@ -128,23 +146,27 @@ export default {
         this.$message.warning("请选择文件");
         return;
       }
-      let formData = new FormData(); //创建一个表单
-      this.images.forEach((file) => {
-        formData.append("files", file.raw); //将文件传到表单中，files属性是后端接受的参数名
-      });
+      let formData = new FormData();
+      formData.append("image", this.images[0].raw); // 假设只上传第一个选中的图片
+
       this.$axios
-        .post("/file", formData, {
+        .post("/uploadImage", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         })
-        .then((res) => {
-          this.$message.success("文件上传成功");
-          this.images = [];
-          this.getImages();
+        .then((response) => {
+          if (response.data && response.data.url) {
+            this.uploadedImageUrl = response.data.url; // 更新图片URL
+            this.$message.success("文件上传成功");
+            this.images = []; // 清空上传列表
+          } else {
+            this.$message.error("文件上传失败");
+          }
         })
         .catch((error) => {
-          this.$message.error("文件上传失败", error.msg);
+          this.$message.error("文件上传失败", error.message);
         });
     },
+
     //移除文件列表时的钩子
     handleRemove(file, fileList) {
       this.images = fileList;
@@ -291,10 +313,12 @@ export default {
 }
 
 .image-show {
+  border: solid 0.2rem black;
+
   flex: 6;
   height: 80vh;
   border-radius: 3%;
-  background-color: rgb(93, 181, 150);
+  background-color: rgba(182, 241, 220, 0.363);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -302,13 +326,12 @@ export default {
 }
 
 .image-show img {
-  width: 85%;
-  height: 90%;
   border-radius: 3%;
   background-color: white;
 }
 .data-show {
-  background: rgb(225, 209, 209);
+  background: rgba(225, 209, 209, 0.338);
+  border: solid 0.2rem black;
   flex: 2;
   height: 80vh;
   border-radius: 3%;
@@ -324,7 +347,8 @@ export default {
 .slecet {
   display: flex;
   align-items: center;
-  margin-bottom: 15%;
+  margin-bottom: 5%;
+  justify-content: space-evenly;
   .el-button {
     height: 40px;
   }
@@ -348,12 +372,19 @@ export default {
   text-align: center;
   display: block;
   margin: 0 2%;
+  .el-input {
+    min-width: 100px;
+  }
 }
 
 /* 鉴定结果card*/
 .box-card {
   img {
     background-color: #fff;
+    max-height: 40%;
+    max-width: 40%;
+    min-height: 30%;
+    min-width: 30%;
   }
   h3 {
     text-align: center;
