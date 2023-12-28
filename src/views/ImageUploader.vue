@@ -2,7 +2,7 @@
  * @Author: 杨柳岸 88012771+Yang1aa@users.noreply.github.com
  * @Date: 2023-12-02 13:48:44
  * @LastEditors: 杨柳岸 88012771+Yang1aa@users.noreply.github.com
- * @LastEditTime: 2023-12-23 18:48:45
+ * @LastEditTime: 2023-12-28 22:09:12
  * @FilePath: \webcode\src\components\TextUploader.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -58,15 +58,17 @@
 
     <div class="image-container">
       <!-- 回显图片 -->
-      <div class="image-show">
-        <img v-if="uploadedImageUrl"
-             :src="uploadedImageUrl"
-             :key="uploadedImageUrl"
-             alt="Uploaded Image" />
-        <img v-else
-             :src="defaultImageUrl"
-             alt="Default Image" />
+      <div class="image-show" ref="imageShow" style="position: relative">
+        <div v-if="isScanning" class="loading"></div>
+        <img
+          v-if="uploadedImageUrl"
+          :src="uploadedImageUrl"
+          :key="uploadedImageUrl"
+          alt="Uploaded Image"
+        />
+        <img v-else :src="defaultImageUrl" alt="Default Image" />
       </div>
+      <!-- 攻击后图片 -->
       <div class="data-show">
         <div class="slecet">
           <!-- 模型选择 -->
@@ -83,19 +85,21 @@
             </el-select>
           </div>
           <!-- 鉴定按钮 -->
-          <el-button size="small" type="primary">鉴定检测</el-button>
+          <el-button size="small" type="primary" @click="scanImage"
+            >鉴定检测</el-button
+          >
         </div>
         <!-- 鉴定结果 -->
         <div>
           <el-card class="box-card">
             <el-card class="box-card">
-              <img v-if="uploadedImageUrl"
-                   :src="uploadedImageUrl"
-                   :key="uploadedImageUrl"
-                   alt="Uploaded Image" />
-              <img v-else
-                   :src="defaultImageUrl"
-                   alt="Default Image" />
+              <img
+                v-if="uploadedImageUrl"
+                :src="uploadedImageUrl"
+                :key="uploadedImageUrl"
+                alt="Uploaded Image"
+              />
+              <img v-else :src="defaultImageUrl" alt="Default Image" />
             </el-card>
           </el-card>
           <el-card class="box-card">
@@ -138,6 +142,7 @@ export default {
       value: "选项1",
       uploadedImageUrl: null, // 用于存储上传图片的URL
       defaultImageUrl: "/default.jpg", // 默认图片的路径
+      isScanning: false,
     };
   },
   methods: {
@@ -197,10 +202,32 @@ export default {
           this.$message.error("获取图片列表失败");
         });
     },
+    scanImage() {
+      this.isScanning = true; // 开始扫描
+
+      setTimeout(() => {
+        this.isScanning = false; // 3秒后停止扫描
+      }, 3000); // 3000毫秒（3秒）后执行
+    },
+    scanImage() {
+      if (!this.uploadedImageUrl) {
+        // 如果没有上传图片，显示提示信息
+        this.$message({
+          message: "请先上传图片再进行鉴定检测",
+          type: "warning",
+        });
+        return; // 直接返回，不执行扫描
+      }
+
+      this.isScanning = true;
+      setTimeout(() => {
+        this.isScanning = false;
+      }, 3000);
+    },
   },
 };
 </script>
-<style lang="scss">
+<style scoped>
 .imageuploader-container {
   color: #00aaff;
   text-align: center;
@@ -272,16 +299,12 @@ export default {
   overflow: hidden;
 }
 
-.upload-container {
-  .el-upload-dragger {
-  }
+.el-upload-dragger {
   width: 100% !important;
   height: 100px !important;
 }
 
-.upload-container {
-  .el-upload {
-  }
+.el-upload {
   width: 100% !important;
 }
 .el-icon-upload {
@@ -314,8 +337,7 @@ export default {
 
 .image-show {
   border: solid 0.2rem black;
-
-  flex: 6;
+  flex: 1;
   height: 80vh;
   border-radius: 3%;
   background-color: rgba(182, 241, 220, 0.363);
@@ -323,16 +345,22 @@ export default {
   justify-content: center;
   align-items: center;
   margin-left: 2px;
+  overflow: hidden;
+  position: relative;
 }
 
 .image-show img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* 使用transform进行精确的居中 */
   border-radius: 3%;
   background-color: white;
 }
 .data-show {
   background: rgba(225, 209, 209, 0.338);
   border: solid 0.2rem black;
-  flex: 2;
+  flex: 1;
   height: 80vh;
   border-radius: 3%;
   margin-left: 3%;
@@ -349,45 +377,67 @@ export default {
   align-items: center;
   margin-bottom: 5%;
   justify-content: space-evenly;
-  .el-button {
-    height: 40px;
-  }
+}
+.slecet .el-button {
+  height: 40px;
 }
 .data-select {
   display: flex;
   justify-content: center;
   align-items: center;
   margin: 2%;
-  h3 {
-    color: black;
-    margin-right: 5px;
-    min-width: 80px;
-  }
-  el-button {
-    color: #00aaff !important;
-  }
+}
+.data-select h3 {
+  color: black;
+  margin-right: 5px;
+  min-width: 80px;
+}
+.data-select el-button {
+  color: #00aaff !important;
 }
 .el-select {
   width: 70%;
   text-align: center;
   display: block;
   margin: 0 2%;
-  .el-input {
-    min-width: 100px;
-  }
+}
+.el-select .el-input {
+  min-width: 100px;
+}
+/* 鉴定结果card*/
+.box-card img {
+  background-color: #fff;
+  max-height: 40%;
+  max-width: 40%;
+  min-height: 30%;
+  min-width: 30%;
+}
+.box-card h3 {
+  text-align: center;
 }
 
-/* 鉴定结果card*/
-.box-card {
-  img {
-    background-color: #fff;
-    max-height: 40%;
-    max-width: 40%;
-    min-height: 30%;
-    min-width: 30%;
-  }
-  h3 {
-    text-align: center;
+/*扫描动画*/
+.loading {
+  z-index: 100;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(#76c9f5, #60c2f7),
+    linear-gradient(90deg, #ffffff33 1px, transparent 0),
+    linear-gradient(#ffffff33 1px, transparent 0),
+    linear-gradient(transparent, #3db3f3);
+  background-size: 100% 1.5%, 10% 100%, 100% 8%, 100% 100%;
+  background-repeat: no-repeat, repeat, repeat, no-repeat;
+  background-position: 0 0, 0 0, 0 0, 0 0;
+  clip-path: polygon(0% 0%, 100% 0%, 100% 1.5%, 0% 1.5%);
+  animation: move 1.5s infinite linear;
+}
+@keyframes move {
+  to {
+    background-position: 0 100%, 0 0, 0 0, 0 0;
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
   }
 }
 </style>
