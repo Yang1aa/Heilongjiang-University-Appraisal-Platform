@@ -57,14 +57,14 @@
 export default {
   created() {
     // 在页面刷新时，检查当前路由是否是默认路由
-    if (this.$route.path !== "/HomePage") {
+    if (this.$route.path !== "/ImageUploader") {
       // 如果当前路由不是目标路由，使用编程式导航跳转到目标路由
-      this.$router.replace("/HomePage");
+      this.$router.replace("/ImageUploader");
     }
   },
   data() {
     return {
-      activeName: "HomePage",
+      activeName: "ImageUploader",
     };
   },
   methods: {

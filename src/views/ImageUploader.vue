@@ -2,109 +2,146 @@
  * @Author: 杨柳岸 88012771+Yang1aa@users.noreply.github.com
  * @Date: 2023-12-02 13:48:44
  * @LastEditors: 杨柳岸 88012771+Yang1aa@users.noreply.github.com
- * @LastEditTime: 2023-12-28 22:09:12
+ * @LastEditTime: 2023-12-29 17:17:27
  * @FilePath: \webcode\src\components\TextUploader.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
 <template>
   <div class="imageuploader-container">
-    <!-- 
-      <el-row :gutter="12">
-      <el-col :span="8">
-        <el-card shadow="always"> 总是显示 </el-card>
-      </el-col>
-      <el-col :span="8">
-        <el-card shadow="hover"> 鼠标悬浮时显示 </el-card>
-      </el-col>
-      <el-col :span="8">
-        <el-card shadow="hover"> 鼠标悬浮时显示 </el-card>
-      </el-col>
-      <el-col :span="8">
-        <el-card shadow="hover"> 鼠标悬浮时显示 </el-card>
-      </el-col>
-      <el-col :span="8">
-        <el-card shadow="never"> 从不显示 </el-card>
-      </el-col>
-    </el-row>
- -->
-
-    <!-- 图片上传 -->
-    <el-upload
-      multiple
-      :limit="3"
-      class="file-box"
-      ref="upload"
-      action="http://localhost:8088/file"
-      :on-preview="handlePreview"
-      :on-remove="handleRemove"
-      :on-change="handleChange"
-      :on-exceed="handleExceed"
-      :file-list="images"
-      list-type="picture"
-      :auto-upload="false"
-    >
-      <el-button slot="trigger" size="small" type="primary">选取图片</el-button>
-      <el-button
-        style="margin-left: 10px"
-        size="small"
-        type="success"
-        @click="submitFile"
-        >上传图片</el-button
-      >
-      <div slot="tip" class="el-upload__tip">
-        只能上传jpg/png文件，且不超过500kb
+    <div class="test-image-container">
+      <div class="slecet">
+        <h2>攻击图前后示例</h2>
       </div>
-    </el-upload>
+      <!-- 示例图 -->
+      <div class="test-image-show">
+        <!-- 回显图片 -->
+        <div class="test-data-show">
+          <h2>攻击前图片示例图</h2>
+          <el-row>
+            <el-col :span="8">
+              <el-card :body-style="{ padding: '0px' }">
+                <img
+                  src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
+                  class="image"
+                />
+                <div style="padding: 14px; text-align: left">
+                  <h4>prcesion:47.50%</h4>
+                  <h4>recall:47.50%</h4>
+                  <h4>map@50:95.83%</h4>
+                </div>
+              </el-card>
+            </el-col>
+          </el-row>
+        </div>
+        <!-- 攻击后图片 -->
+        <div class="test-data-show">
+          <h2>攻击后图片示例图</h2>
+          <!-- 鉴定结果 -->
+          <el-row>
+            <el-col :span="8">
+              <el-card :body-style="{ padding: '0px' }">
+                <img
+                  src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
+                  class="image"
+                />
+                <div style="padding: 14px; text-align: left">
+                  <h4>prcesion:47.50%</h4>
+                  <h4>recall:47.50%</h4>
+                  <h4>map@50:95.83%</h4>
+                </div>
+              </el-card>
+            </el-col>
+          </el-row>
+        </div>
+      </div>
+    </div>
 
     <div class="image-container">
-      <!-- 回显图片 -->
-      <div class="image-show" ref="imageShow" style="position: relative">
-        <div v-if="isScanning" class="loading"></div>
-        <img
-          v-if="uploadedImageUrl"
-          :src="uploadedImageUrl"
-          :key="uploadedImageUrl"
-          alt="Uploaded Image"
-        />
-        <img v-else :src="defaultImageUrl" alt="Default Image" />
-      </div>
-      <!-- 攻击后图片 -->
-      <div class="data-show">
-        <div class="slecet">
-          <!-- 模型选择 -->
-          <div class="data-select">
-            <h3>模型选择</h3>
-            <el-select v-model="value" placeholder="请选择">
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              >
-              </el-option>
-            </el-select>
-          </div>
-          <!-- 鉴定按钮 -->
-          <el-button size="small" type="primary" @click="scanImage"
-            >鉴定检测</el-button
-          >
+      <!-- 图片上传 -->
+      <el-upload
+        multiple
+        :limit="3"
+        class="file-box"
+        ref="upload"
+        action="http://localhost:8088/file"
+        :on-preview="handlePreview"
+        :on-remove="handleRemove"
+        :on-change="handleChange"
+        :on-exceed="handleExceed"
+        :file-list="images"
+        list-type="picture"
+        :auto-upload="false"
+      >
+        <el-button slot="trigger" size="small" type="primary"
+          >选取图片</el-button
+        >
+        <el-button
+          style="margin-left: 10px"
+          size="small"
+          type="success"
+          @click="submitFile"
+          >上传图片</el-button
+        >
+        <div slot="tip" class="el-upload__tip">
+          只能上传jpg/png文件，且不超过500kb
         </div>
-        <!-- 鉴定结果 -->
-        <div>
-          <el-card class="box-card">
-            <el-card class="box-card">
-              <img
-                v-if="uploadedImageUrl"
-                :src="uploadedImageUrl"
-                :key="uploadedImageUrl"
-                alt="Uploaded Image"
-              />
-              <img v-else :src="defaultImageUrl" alt="Default Image" />
-            </el-card>
+      </el-upload>
+      <!-- 下拉框 -->
+      <div class="slecet">
+        <!-- 模型选择 -->
+        <div class="data-select">
+          <h2>模型选择</h2>
+          <el-select v-model="value" placeholder="请选择">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+        </div>
+        <!-- 鉴定按钮 -->
+        <el-button size="small" type="primary" @click="scanImage"
+          >鉴定检测</el-button
+        >
+      </div>
+      <!-- 实测图 -->
+      <div class="image-show">
+        <!-- 回显图片 -->
+        <div class="data-show">
+          <el-card class="box-card" ref="imageShow" style="position: relative">
+            <div v-if="isScanning" class="loading"></div>
+            <img
+              v-if="uploadedImageUrl"
+              :src="uploadedImageUrl"
+              :key="uploadedImageUrl"
+              alt="Uploaded Image"
+            />
+            <img v-else :src="defaultImageUrl" alt="Default Image" />
           </el-card>
           <el-card class="box-card">
-            <h3>性能1：1%</h3>
-            <h3>性能1：1%</h3>
+            <h3>prcesion:47.50%</h3>
+            <h3>recall:47.50%</h3>
+            <h3>map@50:95.83%</h3>
+          </el-card>
+        </div>
+        <!-- 攻击后图片 -->
+        <div class="data-show">
+          <!-- 鉴定结果 -->
+          <el-card class="box-card">
+            <img
+              v-if="uploadedImageUrl"
+              :src="uploadedImageUrl"
+              :key="uploadedImageUrl"
+              alt="Uploaded Image"
+            />
+            <img v-else :src="defaultImageUrl" alt="Default Image" />
+          </el-card>
+          <el-card class="box-card">
+            <h3>prcesion:47.50%</h3>
+            <h3>recall:47.50%</h3>
+            <h3>map@50:95.83%</h3>
           </el-card>
         </div>
       </div>
@@ -203,13 +240,6 @@ export default {
         });
     },
     scanImage() {
-      this.isScanning = true; // 开始扫描
-
-      setTimeout(() => {
-        this.isScanning = false; // 3秒后停止扫描
-      }, 3000); // 3000毫秒（3秒）后执行
-    },
-    scanImage() {
       if (!this.uploadedImageUrl) {
         // 如果没有上传图片，显示提示信息
         this.$message({
@@ -248,11 +278,13 @@ export default {
 }
 .el-row {
   position: relative;
+  display: flex;
+  justify-content: center;
 }
 .file-box {
   border: 1px solid #dcdfe6;
   width: 350px;
-  margin: 50px auto;
+  margin: 0.5% auto;
   padding: 35px 35px 15px 35px;
   border-radius: 5px;
   -webkit-border-radius: 5px;
@@ -329,45 +361,89 @@ export default {
 
 /*上传后图片样式设置*/
 .image-container {
-  width: 100%;
-  height: 80vh;
-  display: flex;
+  width: 98%;
+  border-radius: 10px;
   margin-bottom: 10vh;
+  border: solid 0.2rem black;
+  background-color: rgba(182, 241, 220, 0.363);
+  margin-left: auto;
+  margin-right: auto;
+}
+.test-image-container {
+  width: 80%;
+  border-radius: 10px;
+  margin: 1vh;
+  border: solid 0.2rem black;
+  background-color: rgba(182, 241, 220, 0.363);
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .image-show {
-  border: solid 0.2rem black;
-  flex: 1;
-  height: 80vh;
   border-radius: 3%;
   background-color: rgba(182, 241, 220, 0.363);
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-left: 2px;
   overflow: hidden;
-  position: relative;
+}
+.test-image-show {
+  border-radius: 3px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
 }
 
-.image-show img {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%); /* 使用transform进行精确的居中 */
-  border-radius: 3%;
-  background-color: white;
-}
 .data-show {
   background: rgba(225, 209, 209, 0.338);
-  border: solid 0.2rem black;
   flex: 1;
-  height: 80vh;
   border-radius: 3%;
-  margin-left: 3%;
   padding: 1% 3%;
+  margin: 1% 0.5% 1%;
+  border: 1px solid black;
   /*display: flex;
   justify-content: center;
   align-items: center;*/
+}
+
+.test-data-show {
+  background: rgba(225, 209, 209, 0.338);
+  flex: 1;
+  border-radius: 3%;
+  padding: 1% 3%;
+  border: 1px solid black;
+  margin: 1% 0.5% 1%;
+}
+
+.time {
+  font-size: 13px;
+  color: #999;
+}
+
+.bottom {
+  margin-top: 13px;
+  line-height: 12px;
+}
+
+.button {
+  padding: 0;
+  float: right;
+}
+
+.image {
+  width: 100%;
+  display: block;
+}
+
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: "";
+}
+
+.clearfix:after {
+  clear: both;
 }
 
 /* 下拉框*/
@@ -375,8 +451,8 @@ export default {
 .slecet {
   display: flex;
   align-items: center;
-  margin-bottom: 5%;
-  justify-content: space-evenly;
+  justify-content: center;
+  padding: 1%;
 }
 .slecet .el-button {
   height: 40px;
@@ -385,18 +461,16 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 2%;
 }
-.data-select h3 {
+.data-select h2 {
   color: black;
   margin-right: 5px;
-  min-width: 80px;
+  min-width: 100px;
 }
 .data-select el-button {
   color: #00aaff !important;
 }
 .el-select {
-  width: 70%;
   text-align: center;
   display: block;
   margin: 0 2%;
