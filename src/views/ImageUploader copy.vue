@@ -2,7 +2,7 @@
  * @Author: 杨柳岸 88012771+Yang1aa@users.noreply.github.com
  * @Date: 2023-12-02 13:48:44
  * @LastEditors: 杨柳岸 88012771+Yang1aa@users.noreply.github.com
- * @LastEditTime: 2023-12-29 17:47:30
+ * @LastEditTime: 2023-12-29 17:15:28
  * @FilePath: \webcode\src\components\TextUploader.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -10,7 +10,7 @@
   <div class="imageuploader-container">
     <div class="test-image-container">
       <div class="slecet">
-        <h1>攻击图前后示例</h1>
+        <h2>攻击图前后示例</h2>
       </div>
       <!-- 示例图 -->
       <div class="test-image-show">
@@ -18,7 +18,7 @@
         <div class="test-data-show">
           <h2>攻击前图片示例图</h2>
           <el-row>
-            <el-col :span="6">
+            <el-col :span="8">
               <el-card :body-style="{ padding: '0px' }">
                 <img
                   src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
@@ -38,7 +38,7 @@
           <h2>攻击后图片示例图</h2>
           <!-- 鉴定结果 -->
           <el-row>
-            <el-col :span="6">
+            <el-col :span="8">
               <el-card :body-style="{ padding: '0px' }">
                 <img
                   src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
@@ -259,7 +259,7 @@ export default {
 </script>
 <style scoped>
 .imageuploader-container {
-  color: #ffffff;
+  color: #00aaff;
   text-align: center;
   z-index: 0;
   overflow-x: hidden;
@@ -271,12 +271,6 @@ export default {
   left: 0;
   width: 100%;
   flex-direction: column;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(32, 87, 151, 0.8) 10%,
-    #000 80%
-  );
-  z-index: -1;
 }
 .upload-container {
   margin-top: 10px;
@@ -296,7 +290,6 @@ export default {
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   box-shadow: 0 0 25px #909399;
-  background: #fff;
 }
 
 .el-row {
@@ -372,6 +365,7 @@ export default {
   border-radius: 10px;
   margin-bottom: 10vh;
   border: solid 0.2rem black;
+  background-color: rgba(182, 241, 220, 0.363);
   margin-left: auto;
   margin-right: auto;
 }
@@ -380,12 +374,14 @@ export default {
   border-radius: 10px;
   margin: 1vh;
   border: solid 0.2rem black;
+  background-color: rgba(182, 241, 220, 0.363);
   margin-left: auto;
   margin-right: auto;
 }
 
 .image-show {
   border-radius: 3%;
+  background-color: rgba(182, 241, 220, 0.363);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -400,6 +396,7 @@ export default {
 }
 
 .data-show {
+  background: rgba(225, 209, 209, 0.338);
   flex: 1;
   border-radius: 3%;
   padding: 1% 3%;
@@ -411,6 +408,7 @@ export default {
 }
 
 .test-data-show {
+  background: rgba(225, 209, 209, 0.338);
   flex: 1;
   border-radius: 3%;
   padding: 1% 3%;
@@ -420,6 +418,7 @@ export default {
 
 .time {
   font-size: 13px;
+  color: #999;
 }
 
 .bottom {
@@ -464,7 +463,7 @@ export default {
   align-items: center;
 }
 .data-select h2 {
-  color: rgb(255, 255, 255);
+  color: black;
   margin-right: 5px;
   min-width: 100px;
 }
