@@ -2,7 +2,7 @@
  * @Author: 杨柳岸 88012771+Yang1aa@users.noreply.github.com
  * @Date: 2023-12-02 13:48:44
  * @LastEditors: 杨柳岸 88012771+Yang1aa@users.noreply.github.com
- * @LastEditTime: 2023-12-29 17:47:30
+ * @LastEditTime: 2024-01-11 20:59:52
  * @FilePath: \webcode\src\components\TextUploader.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -17,7 +17,7 @@
         <!-- 回显图片 -->
         <div class="test-data-show">
           <h2>攻击前图片示例图</h2>
-          <el-row>
+          <!-- <el-row>
             <el-col :span="6">
               <el-card :body-style="{ padding: '0px' }">
                 <img
@@ -31,13 +31,18 @@
                 </div>
               </el-card>
             </el-col>
-          </el-row>
+          </el-row> -->
+          <img src="../../public/beforeattacked.png" alt="" />
+        </div>
+        <div class="test-data-show">
+          <h2>噪声图</h2>
+          <img src="../../public/noise.png" alt="" />
         </div>
         <!-- 攻击后图片 -->
         <div class="test-data-show">
           <h2>攻击后图片示例图</h2>
           <!-- 鉴定结果 -->
-          <el-row>
+          <!-- <el-row>
             <el-col :span="6">
               <el-card :body-style="{ padding: '0px' }">
                 <img
@@ -51,7 +56,8 @@
                 </div>
               </el-card>
             </el-col>
-          </el-row>
+          </el-row> -->
+          <img src="../../public/afterattacked.png" alt="" />
         </div>
       </div>
     </div>
@@ -63,7 +69,7 @@
         :limit="3"
         class="file-box"
         ref="upload"
-        action="http://localhost:8088/file"
+        action="http://116.63.8.192:8088"
         :on-preview="handlePreview"
         :on-remove="handleRemove"
         :on-change="handleChange"
@@ -130,18 +136,19 @@
         <div class="data-show">
           <!-- 鉴定结果 -->
           <el-card class="box-card">
-            <img
+            <!-- <img
               v-if="uploadedImageUrl"
               :src="uploadedImageUrl"
               :key="uploadedImageUrl"
               alt="Uploaded Image"
             />
-            <img v-else :src="defaultImageUrl" alt="Default Image" />
+            <img v-else :src="defaultImageUrl" alt="Default Image" /> -->
+            <img :src="defaultImageUrl" alt="Default Image" />
           </el-card>
           <el-card class="box-card">
+            <h3>classification:bird</h3>
+            <h3>&nbsp;</h3>
             <h3>prcesion:47.50%</h3>
-            <h3>recall:47.50%</h3>
-            <h3>map@50:95.83%</h3>
           </el-card>
         </div>
       </div>
@@ -414,7 +421,6 @@ export default {
   flex: 1;
   border-radius: 3%;
   padding: 1% 3%;
-  border: 1px solid black;
   margin: 1% 0.5% 1%;
 }
 
