@@ -4,13 +4,12 @@
     <div class="sticky-header">
       <!-- 中间的真伪检测系统，白色字体，带有动画效果 -->
       <div class="logo">
-        <h1 class="animated-text">黑龙江大学真伪检测系统</h1>
+        <h1 class="animated-text">黑龙江大学检测系统</h1>
       </div>
     </div>
 
     <!-- 用于显示当前路由的组件 -->
     <router-view />
-    <!-- 导航栏 -->
     <nav>
       <router-link
         to="/HomePage"
@@ -18,28 +17,42 @@
       >
         <h3><i class="el-icon-s-home"></i>&nbsp; 首页</h3>
       </router-link>
-      <router-link
-        to="/ImageUploader"
-        :class="{ underline: $route.path === '/ImageUploader' }"
-      >
-        <h3><i class="el-icon-picture"></i>&nbsp; 图片鉴定</h3>
-      </router-link>
+      <a
+        @click="openDialog"
+        :class="{
+          underline:
+            $route.path === '/ImageIdentify' || $route.path === '/ImageAttack',
+        }"
+        >
+        <h3><i class="el-icon-picture"></i>&nbsp; 图片类别</h3>
+      </a>
       <router-link
         to="/VideoUploader"
         :class="{ underline: $route.path === '/VideoUploader' }"
       >
-        <h3><i class="el-icon-video-camera-solid"></i>&nbsp;视频鉴定</h3>
+        <h3><i class="el-icon-video-camera-solid"></i>&nbsp;视频类别</h3>
       </router-link>
       <router-link
         to="/TextUploader"
         :class="{ underline: $route.path === '/TextUploader' }"
       >
-        <h3><i class="el-icon-s-order"></i>&nbsp;文本鉴定</h3>
+        <h3><i class="el-icon-s-order"></i>&nbsp;文本类别</h3>
       </router-link>
-      <!-- <router-link to="/FileUpload" :class="{ underline: $route.path === '/FileUpload' }">
-        <h3><i class="el-icon-s-order"></i>&nbsp;图片鉴定测试</h3>
-      </router-link> -->
     </nav>
+
+    <!-- 弹出层，用于选择图片鉴定类型 -->
+    <el-dialog title="请选择" :visible.sync="dialogVisible" width="30%">
+      <span>请选择您要进行的操作：</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="goToImageUploader('ImageIdentify')"
+          >图片鉴定</el-button
+        >
+        <el-button type="primary" @click="goToImageUploader('ImageAttack')"
+          >图片攻击</el-button
+        >
+      </span>
+    </el-dialog>
 
     <!-- footer -->
     <footer>
@@ -65,9 +78,17 @@ export default {
   data() {
     return {
       activeName: "HomePage",
+      dialogVisible: false, // 控制弹出层的显示与隐藏
     };
   },
   methods: {
+    openDialog() {
+      this.dialogVisible = true;
+    },
+    goToImageUploader(route) {
+      this.dialogVisible = false;
+      this.$router.push({ path: `/${route}` });
+    },
     handleClick(tab, event) {
       console.log(tab, event);
     },

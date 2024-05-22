@@ -2,7 +2,7 @@
  * @Author: 杨柳岸 88012771+Yang1aa@users.noreply.github.com
  * @Date: 2023-12-02 13:48:44
  * @LastEditors: 杨柳岸 88012771+Yang1aa@users.noreply.github.com
- * @LastEditTime: 2024-03-21 12:08:02
+ * @LastEditTime: 2024-05-22 23:11:33
  * @FilePath: \webcode\src\components\TextUploader.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -17,21 +17,6 @@
         <!-- 回显图片 -->
         <div class="test-data-show">
           <h2>攻击前图片示例图</h2>
-          <!-- <el-row>
-            <el-col :span="6">
-              <el-card :body-style="{ padding: '0px' }">
-                <img
-                  src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
-                  class="image"
-                />
-                <div style="padding: 14px; text-align: left">
-                  <h4>prcesion:47.50%</h4>
-                  <h4>recall:47.50%</h4>
-                  <h4>map@50:95.83%</h4>
-                </div>
-              </el-card>
-            </el-col>
-          </el-row> -->
           <img src="../../public/beforeattacked.png" alt="" />
         </div>
         <div class="test-data-show">
@@ -115,7 +100,9 @@
       <!-- 实测图 -->
       <div class="image-show">
         <!-- 回显图片 -->
+
         <div class="data-show">
+          <h2>攻击前图片</h2>
           <el-card class="box-card" ref="imageShow" style="position: relative">
             <div v-if="isScanning" class="loading"></div>
             <img
@@ -134,13 +121,15 @@
             />
           </el-card>
           <el-card class="box-card">
-            <h3>prcesion:47.50%</h3>
-            <h3>recall:47.50%</h3>
-            <h3>map@50:95.83%</h3>
+            <h3>&nbsp;</h3>
+            <h3>&nbsp;</h3>
+            <h3>&nbsp;</h3>
           </el-card>
         </div>
         <!-- 攻击后图片 -->
         <div class="data-show">
+          <h2>攻击后图片</h2>
+
           <!-- 鉴定结果 -->
           <el-card class="box-card">
             <img
@@ -201,7 +190,7 @@ export default {
       value: "选项1",
       postUploadImageUrl: null, //用于存储上传后图片的URL
       uploadedImageUrl: null, // 用于存储上传图片的URL
-      defaultImageUrl: "/default.jpg", // 默认图片的路径
+      defaultImageUrl: "/none.png", // 默认图片的路径
       isScanning: false,
     };
   },
