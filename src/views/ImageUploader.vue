@@ -2,7 +2,7 @@
  * @Author: 杨柳岸 88012771+Yang1aa@users.noreply.github.com
  * @Date: 2023-12-02 13:48:44
  * @LastEditors: 杨柳岸 88012771+Yang1aa@users.noreply.github.com
- * @LastEditTime: 2024-01-11 20:59:52
+ * @LastEditTime: 2024-03-21 12:08:02
  * @FilePath: \webcode\src\components\TextUploader.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -119,12 +119,19 @@
           <el-card class="box-card" ref="imageShow" style="position: relative">
             <div v-if="isScanning" class="loading"></div>
             <img
+              class="setimg"
               v-if="uploadedImageUrl"
               :src="uploadedImageUrl"
               :key="uploadedImageUrl"
               alt="Uploaded Image"
             />
-            <img v-else :src="defaultImageUrl" alt="Default Image" />
+            <img
+              v-else
+              :src="defaultImageUrl"
+              alt="Default Image"
+              class="setimg"
+              style="width: 200px"
+            />
           </el-card>
           <el-card class="box-card">
             <h3>prcesion:47.50%</h3>
@@ -136,19 +143,25 @@
         <div class="data-show">
           <!-- 鉴定结果 -->
           <el-card class="box-card">
-            <!-- <img
-              v-if="uploadedImageUrl"
-              :src="uploadedImageUrl"
-              :key="uploadedImageUrl"
+            <img
+              v-if="postUploadImageUrl"
+              :src="postUploadImageUrl"
+              :key="postUploadImageUrl"
               alt="Uploaded Image"
+              class="setimg"
             />
-            <img v-else :src="defaultImageUrl" alt="Default Image" /> -->
-            <img :src="defaultImageUrl" alt="Default Image" />
+            <img
+              v-else
+              :src="defaultImageUrl"
+              alt="Default Image"
+              class="setimg"
+            />
+            <!-- <img :src="defaultImageUrl" alt="Default Image" /> -->
           </el-card>
           <el-card class="box-card">
-            <h3>classification:bird</h3>
+            <h3>{{ classification }}</h3>
             <h3>&nbsp;</h3>
-            <h3>prcesion:47.50%</h3>
+            <h3>{{ prcesion }}</h3>
           </el-card>
         </div>
       </div>
@@ -161,6 +174,8 @@ export default {
     return {
       images: [],
       imageurls: [],
+      classification: "NULL", // 存储分类信息
+      prcesion: "NULL", // 存储精确度信息
       options: [
         {
           value: "选项1",
@@ -184,6 +199,7 @@ export default {
         },
       ],
       value: "选项1",
+      postUploadImageUrl: null, //用于存储上传后图片的URL
       uploadedImageUrl: null, // 用于存储上传图片的URL
       defaultImageUrl: "/default.jpg", // 默认图片的路径
       isScanning: false,
@@ -246,20 +262,47 @@ export default {
           this.$message.error("获取图片列表失败");
         });
     },
-    scanImage() {
+    async scanImage() {
       if (!this.uploadedImageUrl) {
-        // 如果没有上传图片，显示提示信息
         this.$message({
           message: "请先上传图片再进行鉴定检测",
           type: "warning",
         });
-        return; // 直接返回，不执行扫描
+        return;
       }
 
       this.isScanning = true;
-      setTimeout(() => {
+
+      try {
+        // 调用 get-json 接口获取分类信息
+        const classifyResponse = await this.$axios.get("/get-json");
+        const classifyData = classifyResponse.data;
+        const [classification, precision] = classifyData.classify[0];
+
+        // 格式化并展示分类和准确度信息
+        const formattedPrecision = (precision * 100).toFixed(2);
+        this.classification = `classification: ${classification}`;
+        this.prcesion = `precision: ${formattedPrecision}%`;
+
+        // 调用 image 接口获取图像数据
+        const imageResponse = await this.$axios.get("/image", {
+          responseType: "blob",
+        });
+        const imageBlob = imageResponse.data;
+
+        // 将Blob转换为Base64
+        const reader = new FileReader();
+        reader.readAsDataURL(imageBlob);
+        reader.onloadend = () => {
+          const base64data = reader.result;
+          this.postUploadImageUrl = base64data; // 更新Base64图像数据，以便在页面上显示
+        };
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        this.$message.error("获取数据失败");
+      } finally {
         this.isScanning = false;
-      }, 3000);
+      }
     },
   },
 };
@@ -495,6 +538,15 @@ export default {
 }
 .box-card h3 {
   text-align: center;
+}
+
+.setimg {
+  max-width: 20vw !important; /* 最大宽度为容器宽度的25% */
+  min-width: 20vw !important; /* 最大宽度为容器宽度的25% */
+  max-height: 20vh !important; /* 最大宽度为容器宽度的25% */
+  min-height: 20vh !important; /* 最大宽度为容器宽度的25% */
+  height: auto; /* 高度自动，保持图片原始宽高比 */
+  object-fit: contain; /* 保证图片完整显示且不失真 */
 }
 
 /*扫描动画*/
