@@ -2,7 +2,7 @@
  * @Author: 杨柳岸 88012771+Yang1aa@users.noreply.github.com
  * @Date: 2023-12-02 13:48:44
  * @LastEditors: 杨柳岸 88012771+Yang1aa@users.noreply.github.com
- * @LastEditTime: 2023-12-12 13:36:46
+ * @LastEditTime: 2024-05-22 23:17:02
  * @FilePath: \webcode\src\components\TextUploader.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -13,7 +13,7 @@
       <!-- A<span>u</span>t<span>h</span>e<span>t</span>i<span>c</span>i<span>t</span>y
       D<span>e</span>t<span>e</span>c<span>t</span>i<span>o</span>n
       S<span>y</span>s<span>t</span>e<span>m</span> -->
-      黑<span>龙</span>江<span>大</span>学<span>真</span>伪<span>检</span>测<span>系</span>统
+      黑<span>龙</span>江<span>大</span>学<span>检</span>测<span>系</span>统
     </h1>
   </div>
 </template>
