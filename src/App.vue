@@ -17,15 +17,27 @@
       >
         <h3><i class="el-icon-s-home"></i>&nbsp; 首页</h3>
       </router-link>
-      <a
-        @click="openDialog"
+      <div
+        class="dropdown"
+        @mouseover="showDropdown = true"
+        @mouseleave="showDropdown = false"
         :class="{
           underline:
             $route.path === '/ImageIdentify' || $route.path === '/ImageAttack',
         }"
-        >
-        <h3><i class="el-icon-picture"></i>&nbsp; 图片类别</h3>
-      </a>
+      >
+        <a>
+          <h3>
+            <i class="el-icon-picture"></i>&nbsp; 图片类别
+            <i class="el-icon-caret-bottom"></i>
+          </h3>
+        </a>
+        <div v-if="showDropdown" class="dropdown-content">
+          <div class="triangle-up"></div>
+          <a @click="goToImageUploader('ImageIdentify')">图片鉴定</a>
+          <a @click="goToImageUploader('ImageAttack')">图片攻击</a>
+        </div>
+      </div>
       <router-link
         to="/VideoUploader"
         :class="{ underline: $route.path === '/VideoUploader' }"
@@ -39,20 +51,6 @@
         <h3><i class="el-icon-s-order"></i>&nbsp;文本类别</h3>
       </router-link>
     </nav>
-
-    <!-- 弹出层，用于选择图片鉴定类型 -->
-    <el-dialog title="请选择" :visible.sync="dialogVisible" width="30%">
-      <span>请选择您要进行的操作：</span>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="goToImageUploader('ImageIdentify')"
-          >图片鉴定</el-button
-        >
-        <el-button type="primary" @click="goToImageUploader('ImageAttack')"
-          >图片攻击</el-button
-        >
-      </span>
-    </el-dialog>
 
     <!-- footer -->
     <footer>
@@ -78,19 +76,13 @@ export default {
   data() {
     return {
       activeName: "HomePage",
-      dialogVisible: false, // 控制弹出层的显示与隐藏
+      showDropdown: false, // 控制下拉菜单的显示与隐藏
     };
   },
   methods: {
-    openDialog() {
-      this.dialogVisible = true;
-    },
     goToImageUploader(route) {
-      this.dialogVisible = false;
+      this.showDropdown = false;
       this.$router.push({ path: `/${route}` });
-    },
-    handleClick(tab, event) {
-      console.log(tab, event);
     },
   },
 };
@@ -111,22 +103,20 @@ nav {
   z-index: 1;
   background-color: rgb(70, 67, 68);
   border-radius: 3vw; /* 相对单位 */
-  overflow: hidden;
   min-width: 40vw; /* 相对单位 */
   padding: 0.5vw; /* 相对单位 */
 }
 
-nav a {
+nav a,
+nav .dropdown {
   color: white;
-  /*margin: 1vw 2vw 1vw 0;*/
   text-decoration: none;
   font-size: 0.8vw; /* 相对单位 */
   position: relative;
 }
 
-nav a.underline {
-  position: relative;
-  font-size: 0.8vw; /* 相对单位 */
+nav a.underline,
+nav .dropdown.underline {
   background-image: linear-gradient(to right, white, #00aaff);
   background-size: 100% 0.2vw; /* 相对单位 */
   background-position: 0 100%;
@@ -134,8 +124,59 @@ nav a.underline {
   transition: background-size 0.3s ease-out;
 }
 
-nav a.underline:hover {
+nav a.underline:hover,
+nav .dropdown.underline:hover {
   background-size: 0% 0.2vw; /* 相对单位 */
+}
+
+/* 下拉菜单样式 */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #ffffff;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 999;
+  text-align: left;
+  bottom: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.dropdown-content .triangle-up {
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid #ffffff;
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 8px 12px;
+  text-decoration: none;
+  display: block;
+  font-size: 14px;
+  text-align: center;
+}
+
+.dropdown-content a:hover {
+  background-color: #f1f1f1;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
 }
 
 /* 顶部粘性吸顶效果，黑色背景 */
@@ -151,6 +192,7 @@ nav a.underline:hover {
   padding: 1vw 2vw; /* 相对单位 */
   min-width: 40vw; /* 相对单位 */
 }
+
 /* 中间的真伪检测系统，白色字体，带有动画效果，字体周围稍微亮一些 */
 .logo {
   color: white;
@@ -179,7 +221,6 @@ nav a.underline:hover {
   );
   z-index: -1;
 }
-
 /* footer 样式 */
 footer {
   background-color: rgb(0, 0, 0);
