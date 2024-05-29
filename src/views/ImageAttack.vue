@@ -2,7 +2,7 @@
  * @Author: 杨柳岸 88012771+Yang1aa@users.noreply.github.com
  * @Date: 2023-12-02 13:48:44
  * @LastEditors: 杨柳岸 88012771+Yang1aa@users.noreply.github.com
- * @LastEditTime: 2024-05-22 23:11:33
+ * @LastEditTime: 2024-05-29 14:29:30
  * @FilePath: \webcode\src\components\TextUploader.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -443,7 +443,6 @@ export default {
   border-radius: 3%;
   padding: 1% 3%;
   margin: 1% 0.5% 1%;
-  border: 1px solid black;
   /*display: flex;
   justify-content: center;
   align-items: center;*/
