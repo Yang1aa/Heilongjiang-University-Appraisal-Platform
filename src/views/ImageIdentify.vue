@@ -1,11 +1,3 @@
-<!--
- * @Author: 杨柳岸 88012771+Yang1aa@users.noreply.github.com
- * @Date: 2023-12-02 13:48:44
- * @LastEditors: 杨柳岸 88012771+Yang1aa@users.noreply.github.com
- * @LastEditTime: 2024-05-22 23:21:21
- * @FilePath: \webcode\src\components\TextUploader.vue
- * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
--->
 <template>
   <div class="imageuploader-container">
     <div class="test-image-container">
@@ -127,12 +119,10 @@
       </div>
       <!-- 实测图 -->
       <div class="image-show">
-        <!-- 回显图片 -->
         <div class="data-show">
           <h2>鉴定前图片</h2>
 
           <el-card class="box-card" ref="imageShow" style="position: relative">
-            <div v-if="isScanning" class="loading"></div>
             <img
               class="setimg"
               v-if="uploadedImageUrl"
@@ -148,74 +138,75 @@
               style="width: 200px"
             />
           </el-card>
-          <!-- <el-card class="box-card">
-            <h3>&nbsp;</h3>
-            <h3>&nbsp;</h3>
-            <h3>&nbsp;</h3>
-          </el-card> -->
         </div>
-        <!-- 攻击后图片 -->
         <div class="data-show">
-          
           <h2>鉴定后图片</h2>
           <!-- 鉴定结果 -->
-          <el-card class="box-card">
-            <img
-              v-if="postUploadImageUrl"
-              :src="postUploadImageUrl"
-              :key="postUploadImageUrl"
-              alt="Uploaded Image"
-              class="setimg"
-            />
-            <img
-              v-else
-              :src="defaultImageUrl"
-              alt="Default Image"
-              class="setimg"
-            />
-            <!-- <img :src="defaultImageUrl" alt="Default Image" /> -->
+          <el-card class="box-card" ref="imageShow" style="position: relative">
+            <div v-if="isScanning" class="loading"></div>
+            <div class="stamp-container">
+              <img
+                class="setimg"
+                v-if="uploadedImageUrl"
+                :src="uploadedImageUrl"
+                :key="uploadedImageUrl"
+                alt="Processed Image"
+              />
+              <img
+                v-else
+                :src="defaultImageUrl"
+                alt="Default Image"
+                class="setimg"
+                style="width: 200px"
+              />
+              <div v-if="scanningResult" class="stamp">{{ scanningResult }}</div>
+            </div>
           </el-card>
         </div>
       </div>
     </div>
   </div>
 </template>
+
 <script>
 export default {
   data() {
     return {
       images: [],
       imageurls: [],
-      options: [
-        {
-          value: "选项1",
-          label: "mode1",
-        },
-        {
-          value: "选项2",
-          label: "mode2",
-        },
-        {
-          value: "选项3",
-          label: "mode3",
-        },
-        {
-          value: "选项4",
-          label: "mode4",
-        },
-        {
-          value: "选项5",
-          label: "mode5",
-        },
-      ],
-      value: "选项1",
+      options: [],
+      value: "",
       postUploadImageUrl: null, //用于存储上传后图片的URL
       uploadedImageUrl: null, // 用于存储上传图片的URL
       defaultImageUrl: "/none.png", // 默认图片的路径
       isScanning: false,
+      scanningResult: null, // 用于存储鉴定结果
+      fileName: null, // 用于存储上传图片的文件名
     };
   },
+  mounted() {
+    this.fetchOptions();
+  },
   methods: {
+    fetchOptions() {
+      this.$axios
+        .get("http://116.63.15.173:8088/api/files/hierarchy")
+        .then((response) => {
+          const identify = response.data.identify;
+          const options = Object.keys(identify).map((key) => {
+            return {
+              value: key,
+              label: key,
+            };
+          });
+          this.options = options;
+          this.value = options[0].value; // 设置默认选项
+        })
+        .catch((error) => {
+          console.error("Error fetching options:", error);
+          this.$message.error("获取选项失败");
+        });
+    },
     submitFile() {
       if (this.images.length === 0) {
         this.$message.warning("请选择文件");
@@ -225,12 +216,14 @@ export default {
       formData.append("image", this.images[0].raw); // 假设只上传第一个选中的图片
 
       this.$axios
-        .post("/uploadImage", formData, {
+        .post("http://116.63.15.173:8088/uploadImage", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         })
         .then((response) => {
           if (response.data && response.data.url) {
             this.uploadedImageUrl = response.data.url; // 更新图片URL
+            this.fileName = response.data.fileName; // 更新文件名
+            this.scanningResult = null;
             this.$message.success("文件上传成功");
             this.images = []; // 清空上传列表
           } else {
@@ -284,29 +277,29 @@ export default {
       this.isScanning = true;
 
       try {
-        // 调用 get-json 接口获取分类信息
-        const classifyResponse = await this.$axios.get("/get-json");
-        const classifyData = classifyResponse.data;
-        const [classification, precision] = classifyData.classify[0];
+        // 调用 POST 请求传递模型信息和文件名
+        await this.$axios.post(
+          "http://116.63.15.173:8088/mode",
+          new URLSearchParams({
+            mode: this.value.toLocaleLowerCase(),
+            fileName: this.fileName,
+          }),
+          {
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+          }
+        );
 
-        // 格式化并展示分类和准确度信息
-        const formattedPrecision = (precision * 100).toFixed(2);
-        this.classification = `classification: ${classification}`;
-        this.prcesion = `precision: ${formattedPrecision}%`;
+        // 调用 GET 请求获取分类信息
+        const response = await this.$axios.get(
+          "http://116.63.15.173:8088/get-Xception-json"
+        );
+        const data = response.data;
 
-        // 调用 image 接口获取图像数据
-        const imageResponse = await this.$axios.get("/image", {
-          responseType: "blob",
-        });
-        const imageBlob = imageResponse.data;
-
-        // 将Blob转换为Base64
-        const reader = new FileReader();
-        reader.readAsDataURL(imageBlob);
-        reader.onloadend = () => {
-          const base64data = reader.result;
-          this.postUploadImageUrl = base64data; // 更新Base64图像数据，以便在页面上显示
-        };
+        // 更新图片和鉴定结果
+        this.postUploadImageUrl = data.img_name; // 更新图片URL
+        this.scanningResult = data.val === "real" ? "REAL!" : "FAKE!"; // 更新鉴定结果
       } catch (error) {
         console.error("Error fetching data:", error);
         this.$message.error("获取数据失败");
@@ -317,6 +310,7 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 .imageuploader-container {
   color: #ffffff;
