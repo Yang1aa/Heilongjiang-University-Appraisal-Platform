@@ -10,10 +10,10 @@
           <h2>鉴定前图片示例图</h2>
           <img
             style="
-              max-width: 30% !important;
-              min-width: 30% !important;
-              max-height: 30% !important;
-              min-height: 30% !important;
+              max-width: 50% !important;
+              min-width: 50% !important;
+              max-height: 50% !important;
+              min-height: 50% !important;
             "
             src="../../public/real.jpg"
             alt=""
@@ -24,10 +24,10 @@
           <div class="stamp-container">
             <img
               style="
-                max-width: 30% !important;
-                min-width: 30% !important;
-                max-height: 30% !important;
-                min-height: 30% !important;
+                max-width: 50% !important;
+                min-width: 50% !important;
+                max-height: 50% !important;
+                min-height: 50% !important;
               "
               src="../../public/real.jpg"
               alt=""
@@ -39,10 +39,10 @@
           <h2>鉴定前图片示例图</h2>
           <img
             style="
-              max-width: 30% !important;
-              min-width: 30% !important;
-              max-height: 30% !important;
-              min-height: 30% !important;
+              max-width: 50% !important;
+              min-width: 50% !important;
+              max-height: 50% !important;
+              min-height: 50% !important;
             "
             src="../../public/fake.jpg"
             alt=""
@@ -53,10 +53,10 @@
           <div class="stamp-container">
             <img
               style="
-                max-width: 30% !important;
-                min-width: 30% !important;
-                max-height: 30% !important;
-                min-height: 30% !important;
+                max-width: 50% !important;
+                min-width: 50% !important;
+                max-height: 50% !important;
+                min-height: 50% !important;
               "
               src="../../public/fake.jpg"
               alt=""
