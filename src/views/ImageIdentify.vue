@@ -71,7 +71,7 @@
       <!-- 图片上传 -->
       <el-upload
         multiple
-        :limit="3"
+        :limit="1"
         class="file-box"
         ref="upload"
         action="http://116.63.8.192:8088"
@@ -250,8 +250,8 @@ export default {
       console.log("添加到上传列表时的钩子", file);
     },
     //文件超出个数限制时的钩子
-    handleExceed() {
-      this.$message.warning("文件超出3个");
+    handleExceed(files, fileList) {
+      this.$message.warning("只能上传1张图片");
       console.log("文件超出个数限制时的钩子");
     },
     getImages() {
