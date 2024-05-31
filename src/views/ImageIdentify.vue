@@ -1,11 +1,3 @@
-<!--
- * @Author: 杨柳岸 88012771+Yang1aa@users.noreply.github.com
- * @Date: 2023-12-02 13:48:44
- * @LastEditors: 杨柳岸 88012771+Yang1aa@users.noreply.github.com
- * @LastEditTime: 2024-05-22 23:21:21
- * @FilePath: \webcode\src\components\TextUploader.vue
- * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
--->
 <template>
   <div class="imageuploader-container">
     <div class="test-image-container">
@@ -127,7 +119,6 @@
       </div>
       <!-- 实测图 -->
       <div class="image-show">
-        <!-- 回显图片 -->
         <div class="data-show">
           <h2>鉴定前图片</h2>
 
@@ -148,74 +139,70 @@
               style="width: 200px"
             />
           </el-card>
-          <!-- <el-card class="box-card">
-            <h3>&nbsp;</h3>
-            <h3>&nbsp;</h3>
-            <h3>&nbsp;</h3>
-          </el-card> -->
         </div>
-        <!-- 攻击后图片 -->
         <div class="data-show">
-          
           <h2>鉴定后图片</h2>
           <!-- 鉴定结果 -->
-          <el-card class="box-card">
+          <el-card class="box-card" ref="imageShow" style="position: relative">
+            <div v-if="isScanning" class="loading"></div>
             <img
-              v-if="postUploadImageUrl"
-              :src="postUploadImageUrl"
-              :key="postUploadImageUrl"
-              alt="Uploaded Image"
               class="setimg"
+              v-if="uploadedImageUrl"
+              :src="uploadedImageUrl"
+              :key="uploadedImageUrl"
+              alt="Uploaded Image"
             />
             <img
               v-else
               :src="defaultImageUrl"
               alt="Default Image"
               class="setimg"
+              style="width: 200px"
             />
-            <!-- <img :src="defaultImageUrl" alt="Default Image" /> -->
           </el-card>
         </div>
       </div>
     </div>
   </div>
 </template>
+
 <script>
 export default {
   data() {
     return {
       images: [],
       imageurls: [],
-      options: [
-        {
-          value: "选项1",
-          label: "mode1",
-        },
-        {
-          value: "选项2",
-          label: "mode2",
-        },
-        {
-          value: "选项3",
-          label: "mode3",
-        },
-        {
-          value: "选项4",
-          label: "mode4",
-        },
-        {
-          value: "选项5",
-          label: "mode5",
-        },
-      ],
-      value: "选项1",
+      options: [],
+      value: "",
       postUploadImageUrl: null, //用于存储上传后图片的URL
       uploadedImageUrl: null, // 用于存储上传图片的URL
       defaultImageUrl: "/none.png", // 默认图片的路径
       isScanning: false,
     };
   },
+  mounted() {
+    this.fetchOptions();
+  },
   methods: {
+    fetchOptions() {
+      this.$axios
+        .get("http://116.63.15.173:8088/api/files/hierarchy")
+        .then((response) => {
+          const identify = response.data.identify;
+          const options = Object.keys(identify).map((key) => {
+            return {
+              value: key,
+              label: key,
+            };
+          });
+          this.options = options;
+          this.value = options[0].value; // 设置默认选项
+        })
+        .catch((error) => {
+          console.error("Error fetching options:", error);
+          this.$message.error("获取选项失败");
+        });
+    },
     submitFile() {
       if (this.images.length === 0) {
         this.$message.warning("请选择文件");
@@ -317,6 +304,7 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 .imageuploader-container {
   color: #ffffff;
