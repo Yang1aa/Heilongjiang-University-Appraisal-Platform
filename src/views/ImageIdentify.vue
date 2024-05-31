@@ -123,7 +123,6 @@
           <h2>鉴定前图片</h2>
 
           <el-card class="box-card" ref="imageShow" style="position: relative">
-            <div v-if="isScanning" class="loading"></div>
             <img
               class="setimg"
               v-if="uploadedImageUrl"
@@ -145,20 +144,23 @@
           <!-- 鉴定结果 -->
           <el-card class="box-card" ref="imageShow" style="position: relative">
             <div v-if="isScanning" class="loading"></div>
-            <img
-              class="setimg"
-              v-if="uploadedImageUrl"
-              :src="uploadedImageUrl"
-              :key="uploadedImageUrl"
-              alt="Uploaded Image"
-            />
-            <img
-              v-else
-              :src="defaultImageUrl"
-              alt="Default Image"
-              class="setimg"
-              style="width: 200px"
-            />
+            <div class="stamp-container">
+              <img
+                class="setimg"
+                v-if="uploadedImageUrl"
+                :src="uploadedImageUrl"
+                :key="uploadedImageUrl"
+                alt="Processed Image"
+              />
+              <img
+                v-else
+                :src="defaultImageUrl"
+                alt="Default Image"
+                class="setimg"
+                style="width: 200px"
+              />
+              <div v-if="scanningResult" class="stamp">{{ scanningResult }}</div>
+            </div>
           </el-card>
         </div>
       </div>
@@ -178,6 +180,8 @@ export default {
       uploadedImageUrl: null, // 用于存储上传图片的URL
       defaultImageUrl: "/none.png", // 默认图片的路径
       isScanning: false,
+      scanningResult: null, // 用于存储鉴定结果
+      fileName: null, // 用于存储上传图片的文件名
     };
   },
   mounted() {
@@ -212,12 +216,14 @@ export default {
       formData.append("image", this.images[0].raw); // 假设只上传第一个选中的图片
 
       this.$axios
-        .post("/uploadImage", formData, {
+        .post("http://116.63.15.173:8088/uploadImage", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         })
         .then((response) => {
           if (response.data && response.data.url) {
             this.uploadedImageUrl = response.data.url; // 更新图片URL
+            this.fileName = response.data.fileName; // 更新文件名
+            this.scanningResult = null;
             this.$message.success("文件上传成功");
             this.images = []; // 清空上传列表
           } else {
@@ -271,29 +277,29 @@ export default {
       this.isScanning = true;
 
       try {
-        // 调用 get-json 接口获取分类信息
-        const classifyResponse = await this.$axios.get("/get-json");
-        const classifyData = classifyResponse.data;
-        const [classification, precision] = classifyData.classify[0];
+        // 调用 POST 请求传递模型信息和文件名
+        await this.$axios.post(
+          "http://116.63.15.173:8088/mode",
+          new URLSearchParams({
+            mode: this.value.toLocaleLowerCase(),
+            fileName: this.fileName,
+          }),
+          {
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+          }
+        );
 
-        // 格式化并展示分类和准确度信息
-        const formattedPrecision = (precision * 100).toFixed(2);
-        this.classification = `classification: ${classification}`;
-        this.prcesion = `precision: ${formattedPrecision}%`;
+        // 调用 GET 请求获取分类信息
+        const response = await this.$axios.get(
+          "http://116.63.15.173:8088/get-Xception-json"
+        );
+        const data = response.data;
 
-        // 调用 image 接口获取图像数据
-        const imageResponse = await this.$axios.get("/image", {
-          responseType: "blob",
-        });
-        const imageBlob = imageResponse.data;
-
-        // 将Blob转换为Base64
-        const reader = new FileReader();
-        reader.readAsDataURL(imageBlob);
-        reader.onloadend = () => {
-          const base64data = reader.result;
-          this.postUploadImageUrl = base64data; // 更新Base64图像数据，以便在页面上显示
-        };
+        // 更新图片和鉴定结果
+        this.postUploadImageUrl = data.img_name; // 更新图片URL
+        this.scanningResult = data.val === "real" ? "REAL!" : "FAKE!"; // 更新鉴定结果
       } catch (error) {
         console.error("Error fetching data:", error);
         this.$message.error("获取数据失败");
